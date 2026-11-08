@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>রূপবতী - হোম বিউটি সেবা</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font (Hind Siliguri for Bengali) -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fdf2f8',
+                            100: '#fce7f3',
+                            500: '#ec4899',
+                            600: '#db2777',
+                            700: '#be185d',
+                            900: '#831843'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Hind Siliguri', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Hind Siliguri', sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .toast-animate { animation: slideUp 0.3s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col relative">
+
+    <!-- STYLISH TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none w-11/12 max-w-md"></div>
+
+    <!-- Header Navigation -->
+    <header class="bg-gradient-to-r from-brand-600 to-pink-500 text-white shadow-md sticky top-0 z-40">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-spa text-2xl text-pink-200"></i>
+                <h1 class="text-xl font-bold tracking-wide">রূপবতী <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full font-normal">হোম সার্ভিস</span></h1>
+            </div>
+            
+            <!-- View Switcher -->
+            <div class="bg-black/20 p-1 rounded-full flex text-xs font-semibold">
+                <button id="btnClientView" type="button" onclick="switchView('client')" class="px-3 py-1.5 rounded-full bg-white text-brand-700 shadow-sm transition">
+                    <i class="fa-solid fa-user mr-1"></i> কাস্টমার ভিউ
+                </button>
+                <button id="btnBeauticianView" type="button" onclick="switchView('beautician')" class="px-3 py-1.5 rounded-full text-white hover:text-pink-100 transition">
+                    <i class="fa-solid fa-scissors mr-1"></i> বিউটিশিয়ান ভিউ
+                </button>
+            </div>
+        </div>
+    </header>
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-4 py-6 flex-grow w-full">
+
+        <!-- ==================== CLIENT VIEW ==================== -->
+        <section id="clientView" class="space-y-6">
+
+            <!-- 1. CUSTOMER LOGIN & SIGNUP BOX -->
+            <div id="clientAuthBox" class="bg-white p-6 rounded-2xl shadow-sm border border-pink-200 max-w-md mx-auto space-y-4">
+                <div class="text-center">
+                    <i class="fa-solid fa-circle-user text-3xl text-brand-600 mb-1"></i>
+                    <h3 id="clientAuthTitle" class="font-bold text-slate-800 text-lg">কাস্টমার লগইন</h3>
+                    <p class="text-xs text-slate-500">সার্ভিস বুকিং করতে লগইন বা একাউন্ট তৈরি করুন</p>
+                </div>
+
+                <!-- Login Form -->
+                <form id="clientLoginForm" onsubmit="handleClientLogin(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">ইমেইল ঠিকানা</label>
+                        <input type="email" id="clientLoginEmail" required placeholder="example@mail.com" class="w-full p-2.5 border rounded-lg text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">পাসওয়ার্ড</label>
+                        <input type="password" id="clientLoginPassword" required placeholder="******" class="w-full p-2.5 border rounded-lg text-xs">
+                    </div>
+                    <button type="submit" class="w-full bg-brand-600 text-white py-2.5 rounded-xl text-xs font-bold shadow-md">লগইন করুন</button>
+                    <p class="text-center text-xs text-slate-500 mt-2">নতুন কাস্টমার? <button type="button" onclick="toggleClientAuthMode('signup')" class="text-brand-600 font-bold underline">সাইনআপ করুন</button></p>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="clientSignupForm" onsubmit="handleClientSignup(event)" class="space-y-3 hidden">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">আপনার নাম</label>
+                        <input type="text" id="clientSignupName" required placeholder="আপনার পুরো নাম" class="w-full p-2.5 border rounded-lg text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">ইমেইল ঠিকানা</label>
+                        <input type="email" id="clientSignupEmail" required placeholder="example@mail.com" class="w-full p-2.5 border rounded-lg text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">মোবাইল নম্বর</label>
+                        <input type="tel" id="clientSignupPhone" required placeholder="১০ ডিজিটের ফোন নম্বর" class="w-full p-2.5 border rounded-lg text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">পাসওয়ার্ড নির্ধারণ করুন</label>
+                        <input type="password" id="clientSignupPassword" required placeholder="******" class="w-full p-2.5 border rounded-lg text-xs">
+                    </div>
+                    <button type="submit" class="w-full bg-slate-900 text-white py-2.5 rounded-xl text-xs font-bold shadow-md">অ্যাকাউন্ট তৈরি করুন</button>
+                    <p class="text-center text-xs text-slate-500 mt-2">অ্যাকাউন্ট আছে? <button type="button" onclick="toggleClientAuthMode('login')" class="text-brand-600 font-bold underline">লগইন করুন</button></p>
+                </form>
+            </div>
+
+            <!-- 2. CUSTOMER DASHBOARD -->
+            <div id="clientMainContent" class="space-y-6 hidden">
+                <div class="bg-pink-100/70 border border-pink-200 p-4 rounded-xl flex justify-between items-center text-xs">
+                    <div>
+                        <span class="text-slate-500">স্বাগতম,</span>
+                        <h4 id="loggedClientDisplay" class="font-bold text-brand-700 text-sm"></h4>
+                    </div>
+                    <button type="button" onclick="handleClientLogout()" class="bg-white hover:bg-red-50 text-red-600 border border-red-200 px-3 py-1.5 rounded-lg font-bold shadow-sm">লগআউট</button>
+                </div>
+
+                <!-- Location & Pincode Search Banner -->
+                <div class="bg-gradient-to-br from-brand-500 to-pink-600 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+                    <div class="relative z-10">
+                        <h2 class="text-2xl font-bold mb-2">ঘরে বসেই পান পার্লারের সেরা সেবা!</h2>
+                        <p class="text-pink-100 text-sm mb-4">এলাকার নাম বা পিনকোড দিয়ে সার্চ করে সেরা বিউটিশিয়ান বুক করুন।</p>
+                        
+                        <div class="bg-white p-2 rounded-xl shadow-lg flex flex-col sm:flex-row gap-2 text-slate-700">
+                            <div class="flex-1 flex items-center px-3 bg-slate-100 rounded-lg">
+                                <i class="fa-solid fa-location-dot text-brand-500 mr-2"></i>
+                                <input type="text" id="userLocationInput" placeholder="এলাকার নাম বা পিনকোড (যেমন: Dhubri বা 783301)" class="w-full py-2 bg-transparent focus:outline-none text-sm">
+                            </div>
+                            <button type="button" onclick="filterBeauticians()" class="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2.5 rounded-lg font-medium transition text-sm flex items-center justify-center">
+                                <i class="fa-solid fa-magnifying-glass mr-2"></i> বিউটিশিয়ান খুঁজুন
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Beautician List Section -->
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-slate-800 flex items-center">
+                            <i class="fa-solid fa-users text-brand-500 mr-2"></i> আপনার এলাকার বিউটিশিয়ান তালিকা
+                        </h3>
+                        <span id="beauticianCount" class="text-xs bg-brand-100 text-brand-700 px-2.5 py-1 rounded-full font-semibold">০ জন পাওয়া গেছে</span>
+                    </div>
+                    <div id="beauticianGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="col-span-full text-center py-8 text-slate-400 text-xs bg-white rounded-xl border border-slate-200">সঠিক ফলাফল পেতে এলাকার নাম বা পিনকোড দিয়ে সার্চ করুন।</div>
+                    </div>
+                </div>
+
+                <!-- Client's Active Bookings Tracker -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mt-8">
+                    <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center">
+                        <i class="fa-solid fa-calendar-check text-brand-500 mr-2"></i> আপনার বুকিং হিস্ট্রি ও রেটিং অপশন
+                    </h3>
+                    <div id="clientBookingsList" class="space-y-3">
+                        <p class="text-xs text-slate-400 text-center py-2">এখনও কোনো বুকিং করা হয়নি</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+        <!-- ==================== BEAUTICIAN VIEW ==================== -->
+        <section id="beauticianView" class="space-y-6 hidden">
+            
+            <!-- BEAUTICIAN LOGIN SECTION -->
+            <div id="beauticianLoginSection" class="bg-slate-900 text-white p-6 rounded-2xl shadow-lg space-y-4 max-w-md mx-auto">
+                <div class="text-center">
+                    <i class="fa-solid fa-lock text-3xl text-pink-400 mb-2"></i>
+                    <h2 class="text-xl font-bold">বিউটিশিয়ান লগইন</h2>
+                    <p class="text-slate-400 text-xs mt-1">আপনার রিকোয়েস্টসমূহ দেখতে আপনার ফোন নম্বর ও নাম দিয়ে লগইন করুন</p>
+                </div>
+
+                <form onsubmit="handleBeauticianLogin(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-xs text-slate-300 font-semibold mb-1">রেজিস্টার্ড মোবাইল নম্বর</label>
+                        <input type="tel" id="loginPhone" required placeholder="আপনার ১০ ডিজিটের মোবাইল নম্বর" class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-300 font-semibold mb-1">রেজিস্টার্ড নাম</label>
+                        <input type="text" id="loginName" required placeholder="আপনার নাম" class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white">
+                    </div>
+                    <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white py-2.5 rounded-xl font-bold text-sm shadow-md transition">লগইন করুন</button>
+                </form>
+
+                <div class="border-t border-slate-800 pt-3 text-center">
+                    <p class="text-xs text-slate-400">নতুন বিউটিশিয়ান?</p>
+                    <button type="button" onclick="toggleRegistrationModal()" class="text-xs text-pink-400 font-bold hover:underline mt-1">এখানে ক্লিক করে রেজিস্টার করুন</button>
+                </div>
+            </div>
+
+            <!-- BEAUTICIAN DASHBOARD -->
+            <div id="beauticianDashboard" class="space-y-6 hidden">
+                <div class="bg-slate-900 text-white p-6 rounded-2xl shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <span class="text-xs bg-pink-500/20 text-pink-300 px-2 py-0.5 rounded-full font-bold">লগইন একাউন্ট</span>
+                        <h2 id="loggedBeauticianName" class="text-xl font-bold mt-1"></h2>
+                        <p id="loggedBeauticianInfo" class="text-slate-400 text-xs"></p>
+                    </div>
+                    <div class="flex items-center flex-wrap gap-2">
+                        <!-- Edit Profile Button -->
+                        <button type="button" onclick="openEditProfileModal()" class="bg-brand-600 hover:bg-brand-700 text-white px-3.5 py-2 rounded-xl font-medium text-xs shadow-md transition flex items-center">
+                            <i class="fa-solid fa-pen-to-square mr-1.5"></i> প্রোফাইল এডিট
+                        </button>
+                        <button type="button" onclick="handleBeauticianLogout()" class="bg-slate-700 hover:bg-slate-600 text-white px-3.5 py-2 rounded-xl font-medium text-xs shadow-md transition flex items-center">
+                            <i class="fa-solid fa-right-from-bracket mr-1.5"></i> লগআউট
+                        </button>
+                        <button type="button" onclick="openDeleteModal()" class="bg-red-600 hover:bg-red-700 text-white px-3.5 py-2 rounded-xl font-medium text-xs shadow-md transition flex items-center">
+                            <i class="fa-solid fa-trash-can mr-1.5"></i> ডিলিট
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Incoming Booking Requests -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-slate-800 flex items-center">
+                            <i class="fa-solid fa-bell text-yellow-500 mr-2"></i> আপনার ব্যক্তিগত বুকিং রিকোয়েস্টসমূহ
+                        </h3>
+                        <span id="pendingRequestsCount" class="text-xs bg-yellow-100 text-yellow-800 px-2.5 py-1 rounded-full font-semibold">০ টি রিকোয়েস্ট</span>
+                    </div>
+                    <div id="beauticianRequestsList" class="space-y-3">
+                        <p class="text-xs text-slate-400 text-center py-4">আপনার এই মুহূর্তে কোনো বুকিং রিকোয়েস্ট নেই</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        <p>© 2026 রূপবতী হোম বিউটি সার্ভিস প্ল্যাটফর্ম | ফায়ারবেস রিয়েল-টাইম কানেক্টেড</p>
+    </footer>
+    <!-- PORTFOLIO & REVIEWS PUBLIC MODAL -->
+    <div id="publicReviewsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] flex flex-col overflow-y-auto">
+            <button type="button" onclick="closePublicReviewsModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            
+            <div class="flex items-center space-x-3 mb-4 pb-3 border-b">
+                <img id="publicModalImg" src="" class="w-12 h-12 rounded-full object-cover border-2 border-brand-500">
+                <div>
+                    <h3 id="publicModalName" class="font-bold text-slate-800 text-base"></h3>
+                    <p id="publicModalRatingSummary" class="text-xs text-amber-600 font-semibold"></p>
+                </div>
+            </div>
+
+            <!-- WORK PORTFOLIO GALLERY SECTION -->
+            <div class="mb-5">
+                <h4 class="text-xs font-bold text-slate-700 mb-2 uppercase tracking-wide flex items-center">
+                    <i class="fa-solid fa-images text-brand-500 mr-1.5"></i> কাজের পোর্টফোলিও / মেকআপ গ্যালারি:
+                </h4>
+                <div id="publicPortfolioGrid" class="grid grid-cols-3 gap-2"></div>
+            </div>
+
+            <!-- REVIEWS SECTION -->
+            <div>
+                <h4 class="text-xs font-bold text-slate-700 mb-2 uppercase tracking-wide flex items-center">
+                    <i class="fa-solid fa-comments text-brand-500 mr-1.5"></i> কাস্টমারদের ফিডব্যাক ও রিভিউসমূহ:
+                </h4>
+                <div id="publicReviewsList" class="space-y-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RATING MODAL -->
+    <div id="ratingModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl relative text-center space-y-4">
+            <button type="button" onclick="closeRatingModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="font-bold text-slate-800 text-base">সেবা কেমন লেগেছে?</h3>
+            <p class="text-xs text-slate-500">স্টার সিলেক্ট করে আপনার মতামত জানান</p>
+            
+            <input type="hidden" id="rateBookingId">
+            <input type="hidden" id="rateBeauticianId">
+            
+            <div class="flex justify-center gap-2 text-2xl text-amber-400 cursor-pointer" id="starContainer">
+                <i class="fa-solid fa-star hover:scale-110 transition" onclick="setRating(1)"></i>
+                <i class="fa-solid fa-star hover:scale-110 transition" onclick="setRating(2)"></i>
+                <i class="fa-solid fa-star hover:scale-110 transition" onclick="setRating(3)"></i>
+                <i class="fa-solid fa-star hover:scale-110 transition" onclick="setRating(4)"></i>
+                <i class="fa-solid fa-star hover:scale-110 transition" onclick="setRating(5)"></i>
+            </div>
+            <span id="ratingText" class="text-xs font-bold text-brand-600 block">৫ স্টার (চমৎকার)</span>
+
+            <textarea id="clientReviewText" rows="2" placeholder="আপনার মূল্যবান মন্তব্য লিখুন..." class="w-full p-2.5 border rounded-xl text-xs"></textarea>
+            
+            <button type="button" onclick="submitRating()" class="w-full bg-brand-600 hover:bg-brand-700 text-white py-2.5 rounded-xl text-xs font-bold shadow-md">রেটিং সাবমিট করুন</button>
+        </div>
+    </div>
+
+    <!-- CUSTOM DELETE CONFIRMATION MODAL -->
+    <div id="deleteModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center space-y-4">
+            <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <h3 class="font-bold text-slate-800 text-base mb-1">একাউন্ট ডিলিট করতে চান?</h3>
+                <p class="text-xs text-slate-500">আপনি কি নিশ্চিতভাবে আপনার অ্যাকাউন্টটি চিরতরে ডিলিট করতে চান?</p>
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button type="button" onclick="closeDeleteModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 py-2.5 rounded-xl text-xs font-bold transition">বাতিল</button>
+                <button type="button" onclick="executeDeleteAccount()" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl text-xs font-bold transition shadow-md">হ্যাঁ, ডিলিট করুন</button>
+            </div>
+        </div>
+    </div>
+    <!-- BOOKING MODAL -->
+    <div id="bookingModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button type="button" onclick="closeBookingModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <div class="flex items-center space-x-3 mb-4 pb-3 border-b">
+                <img id="modalBeauticianImg" src="" class="w-12 h-12 rounded-full object-cover border-2 border-brand-500">
+                <div>
+                    <h3 id="modalBeauticianName" class="font-bold text-slate-800"></h3>
+                    <p id="modalBeauticianArea" class="text-xs text-slate-500"></p>
+                </div>
+            </div>
+            <form id="bookingForm" onsubmit="handleBookingSubmit(event)" class="space-y-4">
+                <input type="hidden" id="modalBeauticianId">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">কাস্টমারের নাম</label>
+                    <input type="text" id="clientName" required readonly class="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-slate-100 text-slate-600">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">মোবাইল নম্বর</label>
+                    <input type="tel" id="clientPhone" required readonly class="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-slate-100 text-slate-600">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">সার্ভিস নির্বাচন করুন</label>
+                    <select id="selectedService" required class="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-white"></select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block text-xs font-semibold text-slate-700 mb-1">তারিখ</label><input type="date" id="bookingDate" required class="w-full p-2.5 border border-slate-300 rounded-lg text-sm"></div>
+                    <div><label class="block text-xs font-semibold text-slate-700 mb-1">সময়</label><input type="time" id="bookingTime" required class="w-full p-2.5 border border-slate-300 rounded-lg text-sm"></div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">পূর্ণাঙ্গ ঠিকানা ও পিনকোড</label>
+                    <textarea id="clientAddress" required rows="2" placeholder="বাড়ি/ফ্ল্যাট, এরিয়া ও পিনকোড..." class="w-full p-2.5 border border-slate-300 rounded-lg text-sm"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white py-3 rounded-xl font-bold text-sm shadow-md">বুকিং কনফার্ম করুন</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- REGISTRATION MODAL -->
+    <div id="registrationModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button type="button" onclick="toggleRegistrationModal()" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-xl font-bold text-slate-800 mb-1">বিউটিশিয়ান রেজিস্ট্রেশন</h3>
+            
+            <form id="regForm" onsubmit="handleRegistrationSubmit(event)" class="space-y-4 mt-3">
+                <div>
+                    <label class="block text-xs font-semibold mb-1">নাম</label>
+                    <input type="text" id="regName" required class="w-full p-2.5 border rounded-lg text-sm" placeholder="আপনার নাম">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">এরিয়া/শহর</label>
+                        <input type="text" id="regArea" required class="w-full p-2.5 border rounded-lg text-sm" placeholder="যেমন: Dhubri">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">পিনকোড (Pincode)</label>
+                        <input type="text" id="regPincode" required class="w-full p-2.5 border rounded-lg text-sm" placeholder="যেমন: 783301">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">ফোন নম্বর</label>
+                    <input type="tel" id="regPhone" required class="w-full p-2.5 border rounded-lg text-sm" placeholder="মোবাইল নম্বর">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold mb-1">প্রোফাইল ছবি</label>
+                    <input type="file" id="regPhotoFile" accept="image/*" required class="w-full p-2 border rounded-lg text-xs bg-slate-50">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold mb-1">কাজের ফটো গ্যালারি</label>
+                    <input type="file" id="regPortfolioFiles" accept="image/*" multiple required class="w-full p-2 border rounded-lg text-xs bg-slate-50">
+                </div>
+
+                <!-- Dynamic Services & Price Inputs -->
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+                    <label class="block text-xs font-bold text-slate-700">সার্ভিস ও দাম</label>
+                    <div id="regServicesContainer" class="space-y-2">
+                        <div class="flex gap-2">
+                            <input type="text" required class="reg-s-name flex-1 p-2 border rounded-lg text-xs bg-white" placeholder="সার্ভিসের নাম">
+                            <input type="number" required class="reg-s-price w-28 p-2 border rounded-lg text-xs bg-white" placeholder="দাম (₹)">
+                        </div>
+                    </div>
+                    <button type="button" onclick="addRegServiceField()" class="text-xs bg-brand-100 text-brand-700 px-3 py-1 rounded-lg font-bold mt-1">+ সার্ভিস যোগ করুন</button>
+                </div>
+
+                <button type="submit" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold text-sm shadow-md">রেজিস্ট্রেশন সম্পন্ন করুন</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- EDIT PROFILE MODAL -->
+    <div id="editProfileModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button type="button" onclick="closeEditProfileModal()" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-xl font-bold text-slate-800 mb-1">প্রোফাইল ও সার্ভিস এডিট করুন</h3>
+            
+            <form id="editForm" onsubmit="handleEditProfileSubmit(event)" class="space-y-4 mt-3">
+                <div>
+                    <label class="block text-xs font-semibold mb-1">নাম</label>
+                    <input type="text" id="editName" required class="w-full p-2.5 border rounded-lg text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">এরিয়া/শহর</label>
+                        <input type="text" id="editArea" required class="w-full p-2.5 border rounded-lg text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">পিনকোড (Pincode)</label>
+                        <input type="text" id="editPincode" required class="w-full p-2.5 border rounded-lg text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">ফোন নম্বর</label>
+                    <input type="tel" id="editPhone" readonly class="w-full p-2.5 border rounded-lg text-sm bg-slate-100 text-slate-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold mb-1">নতুন প্রোফাইল ছবি (ঐচ্ছিক)</label>
+                    <input type="file" id="editPhotoFile" accept="image/*" class="w-full p-2 border rounded-lg text-xs bg-slate-50">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold mb-1">নতুন পোর্টফোলিও ছবি (ঐচ্ছিক)</label>
+                    <input type="file" id="editPortfolioFiles" accept="image/*" multiple class="w-full p-2 border rounded-lg text-xs bg-slate-50">
+                </div>
+
+                <!-- Dynamic Services & Price Inputs -->
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+                    <label class="block text-xs font-bold text-slate-700">সার্ভিসসমূহ ও দাম</label>
+                    <div id="editServicesContainer" class="space-y-2"></div>
+                    <button type="button" onclick="addEditServiceField()" class="text-xs bg-brand-100 text-brand-700 px-3 py-1 rounded-lg font-bold mt-1">+ সার্ভিস যোগ করুন</button>
+                </div>
+
+                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white py-3 rounded-xl font-bold text-sm shadow-md">প্রোফাইল আপডেট করুন</button>
+            </form>
+        </div>
+    </div>
+    <!-- FIREBASE & APP LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB92z2-nFCgjAsg-ZGffkyF8hVW0VVqkLg",
+            authDomain: "rupabatiapp.firebaseapp.com",
+            projectId: "rupabatiapp",
+            storageBucket: "rupabatiapp.firebasestorage.app",
+            messagingSenderId: "167545848523",
+            appId: "1:167545848523:web:cb542978ab828e83f4514e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let beauticians = [];
+        let customers = [];
+        let allBookings = [];
+        let loggedBeautician = null;
+        let loggedCustomer = JSON.parse(localStorage.getItem('rupabati_logged_customer')) || null;
+        let selectedStarRating = 5;
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            let bgColor = type === 'success' ? 'bg-slate-900 text-white border-pink-500' : 'bg-red-600 text-white border-red-400';
+            let icon = type === 'success' ? 'fa-circle-check text-pink-400' : 'fa-circle-exclamation text-white';
+            toast.className = `pointer-events-auto flex items-center gap-3 p-4 rounded-2xl shadow-2xl border-l-4 ${bgColor} toast-animate text-xs font-medium`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-base"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        window.toggleClientAuthMode = function(mode) {
+            const loginForm = document.getElementById('clientLoginForm');
+            const signupForm = document.getElementById('clientSignupForm');
+            const title = document.getElementById('clientAuthTitle');
+            if(mode === 'signup') {
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                title.innerText = 'কাস্টমার রেজিস্ট্রেশন';
+            } else {
+                signupForm.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+                title.innerText = 'কাস্টমার লগইন';
+            }
+        }
+
+        function checkCustomerAuthState() {
+            const authBox = document.getElementById('clientAuthBox');
+            const mainContent = document.getElementById('clientMainContent');
+            if(loggedCustomer) {
+                authBox.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+                document.getElementById('loggedClientDisplay').innerText = `${loggedCustomer.name} (${loggedCustomer.phone})`;
+            } else {
+                mainContent.classList.add('hidden');
+                authBox.classList.remove('hidden');
+            }
+        }
+
+        window.handleClientSignup = async function(event) {
+            event.preventDefault();
+            const name = document.getElementById('clientSignupName').value.trim();
+            const email = document.getElementById('clientSignupEmail').value.trim().toLowerCase();
+            const phone = document.getElementById('clientSignupPhone').value.trim();
+            const password = document.getElementById('clientSignupPassword').value;
+
+            const existing = customers.find(c => c.email === email || c.phone === phone);
+            if(existing) {
+                showToast('এই ইমেইল বা মোবাইল নম্বরটি দিয়ে ইতোমধ্যে একাউন্ট খোলা হয়েছে।', 'error');
+                return;
+            }
+
+            try {
+                const newCustomer = { name, email, phone, password, createdAt: new Date().toISOString() };
+                const docRef = await addDoc(collection(db, "customers"), newCustomer);
+                loggedCustomer = { id: docRef.id, ...newCustomer };
+                localStorage.setItem('rupabati_logged_customer', JSON.stringify(loggedCustomer));
+                checkCustomerAuthState();
+                showToast('অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে!');
+            } catch (error) {
+                showToast('অ্যাকাউন্ট তৈরি করতে সমস্যা হয়েছে।', 'error');
+            }
+        }
+
+        window.handleClientLogin = function(event) {
+            event.preventDefault();
+            const email = document.getElementById('clientLoginEmail').value.trim().toLowerCase();
+            const password = document.getElementById('clientLoginPassword').value;
+
+            const found = customers.find(c => c.email === email && c.password === password);
+            if(found) {
+                loggedCustomer = found;
+                localStorage.setItem('rupabati_logged_customer', JSON.stringify(loggedCustomer));
+                checkCustomerAuthState();
+                showToast(`স্বাগতম ${found.name}!`);
+            } else {
+                showToast('ইমেইল অথবা পাসওয়ার্ড মিলছে না।', 'error');
+            }
+        }
+
+        window.handleClientLogout = function() {
+            loggedCustomer = null;
+            localStorage.removeItem('rupabati_logged_customer');
+            checkCustomerAuthState();
+            showToast('লগআউট করা হয়েছে।');
+        }
+        window.switchView = function(view) {
+            if(view === 'client') {
+                document.getElementById('clientView').classList.remove('hidden');
+                document.getElementById('beauticianView').classList.add('hidden');
+                document.getElementById('btnClientView').className = "px-3 py-1.5 rounded-full bg-white text-brand-700 shadow-sm transition";
+                document.getElementById('btnBeauticianView').className = "px-3 py-1.5 rounded-full text-white hover:text-pink-100 transition";
+                checkCustomerAuthState();
+            } else {
+                document.getElementById('clientView').classList.add('hidden');
+                document.getElementById('beauticianView').classList.remove('hidden');
+                document.getElementById('btnBeauticianView').className = "px-3 py-1.5 rounded-full bg-white text-brand-700 shadow-sm transition";
+                document.getElementById('btnClientView').className = "px-3 py-1.5 rounded-full text-white hover:text-pink-100 transition";
+                checkLoginState();
+            }
+        }
+
+        function checkLoginState() {
+            if(loggedBeautician) {
+                document.getElementById('beauticianLoginSection').classList.add('hidden');
+                document.getElementById('beauticianDashboard').classList.remove('hidden');
+                document.getElementById('loggedBeauticianName').innerText = loggedBeautician.name;
+                document.getElementById('loggedBeauticianInfo').innerText = `এরিয়া: ${loggedBeautician.area} (${loggedBeautician.pincode}) | ফোন: ${loggedBeautician.phone}`;
+                renderBeauticianRequests();
+            } else {
+                document.getElementById('beauticianLoginSection').classList.remove('hidden');
+                document.getElementById('beauticianDashboard').classList.add('hidden');
+            }
+        }
+
+        window.handleBeauticianLogin = function(event) {
+            event.preventDefault();
+            const phone = document.getElementById('loginPhone').value.trim();
+            const name = document.getElementById('loginName').value.trim().toLowerCase();
+            const found = beauticians.find(b => b.phone.trim() === phone && b.name.trim().toLowerCase() === name);
+            if(found) {
+                loggedBeautician = found;
+                showToast(`স্বাগতম ${found.name}!`);
+                checkLoginState();
+            } else {
+                showToast('নাম অথবা মোবাইল নম্বর মিলছে না।', 'error');
+            }
+        }
+
+        window.handleBeauticianLogout = function() {
+            loggedBeautician = null;
+            checkLoginState();
+            showToast('লগআউট করা হয়েছে।');
+        }
+
+        window.openDeleteModal = () => document.getElementById('deleteModal').classList.remove('hidden');
+        window.closeDeleteModal = () => document.getElementById('deleteModal').classList.add('hidden');
+
+        window.executeDeleteAccount = async function() {
+            if(!loggedBeautician) return;
+            try {
+                await deleteDoc(doc(db, "beauticians", loggedBeautician.id));
+                closeDeleteModal();
+                showToast('অ্যাকাউন্ট ডিলিট করা হয়েছে।');
+                loggedBeautician = null;
+                checkLoginState();
+            } catch (error) {
+                showToast('সমস্যা হয়েছে।', 'error');
+            }
+        }
+
+        // Edit Profile Modal Handlers
+        window.openEditProfileModal = function() {
+            if(!loggedBeautician) return;
+            document.getElementById('editName').value = loggedBeautician.name || '';
+            document.getElementById('editArea').value = loggedBeautician.area || '';
+            document.getElementById('editPincode').value = loggedBeautician.pincode || '';
+            document.getElementById('editPhone').value = loggedBeautician.phone || '';
+
+            const container = document.getElementById('editServicesContainer');
+            container.innerHTML = '';
+            const services = loggedBeautician.services || [];
+            if(services.length === 0) {
+                addEditServiceField('', '');
+            } else {
+                services.forEach(s => addEditServiceField(s.name, s.price));
+            }
+
+            document.getElementById('editProfileModal').classList.remove('hidden');
+        }
+
+        window.closeEditProfileModal = () => document.getElementById('editProfileModal').classList.add('hidden');
+
+        window.addEditServiceField = function(name = '', price = '') {
+            const container = document.getElementById('editServicesContainer');
+            const div = document.createElement('div');
+            div.className = "flex gap-2 items-center";
+            div.innerHTML = `
+                <input type="text" required value="${name}" class="edit-s-name flex-1 p-2 border rounded-lg text-xs bg-white" placeholder="সার্ভিসের নাম">
+                <input type="number" required value="${price}" class="edit-s-price w-28 p-2 border rounded-lg text-xs bg-white" placeholder="দাম (₹)">
+                <button type="button" onclick="this.parentElement.remove()" class="text-red-500 px-2 text-sm"><i class="fa-solid fa-trash"></i></button>
+            `;
+            container.appendChild(div);
+        }
+
+        window.addRegServiceField = function() {
+            const container = document.getElementById('regServicesContainer');
+            const div = document.createElement('div');
+            div.className = "flex gap-2 items-center";
+            div.innerHTML = `
+                <input type="text" required class="reg-s-name flex-1 p-2 border rounded-lg text-xs bg-white" placeholder="সার্ভিসের নাম">
+                <input type="number" required class="reg-s-price w-28 p-2 border rounded-lg text-xs bg-white" placeholder="দাম (₹)">
+                <button type="button" onclick="this.parentElement.remove()" class="text-red-500 px-2 text-sm"><i class="fa-solid fa-trash"></i></button>
+            `;
+            container.appendChild(div);
+        }
+
+        window.handleEditProfileSubmit = async function(event) {
+            event.preventDefault();
+            if(!loggedBeautician) return;
+
+            const name = document.getElementById('editName').value.trim();
+            const area = document.getElementById('editArea').value.trim();
+            const pincode = document.getElementById('editPincode').value.trim();
+            const photoInput = document.getElementById('editPhotoFile');
+            const portfolioInput = document.getElementById('editPortfolioFiles');
+
+            const serviceNames = document.querySelectorAll('.edit-s-name');
+            const servicePrices = document.querySelectorAll('.edit-s-price');
+            let updatedServices = [];
+            for(let i = 0; i < serviceNames.length; i++) {
+                if(serviceNames[i].value && servicePrices[i].value) {
+                    updatedServices.push({ name: serviceNames[i].value, price: Number(servicePrices[i].value) });
+                }
+            }
+
+            const convertFileToBase64 = file => new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+
+            try {
+                let updateData = { name, area, pincode, services: updatedServices };
+                if (photoInput.files && photoInput.files[0]) {
+                    updateData.photo = await convertFileToBase64(photoInput.files[0]);
+                }
+                if (portfolioInput.files && portfolioInput.files.length > 0) {
+                    let newPortfolio = loggedBeautician.portfolio || [];
+                    for (let file of Array.from(portfolioInput.files)) {
+                        newPortfolio.push(await convertFileToBase64(file));
+                    }
+                    updateData.portfolio = newPortfolio;
+                }
+
+                await updateDoc(doc(db, "beauticians", loggedBeautician.id), updateData);
+                loggedBeautician = { ...loggedBeautician, ...updateData };
+                checkLoginState();
+                closeEditProfileModal();
+                showToast('প্রোফাইল সফলভাবে আপডেট করা হয়েছে!');
+            } catch (error) {
+                showToast('আপডেট করতে সমস্যা হয়েছে।', 'error');
+            }
+        }
+        // Registration Submit
+        window.handleRegistrationSubmit = async function(event) {
+            event.preventDefault();
+            const name = document.getElementById('regName').value;
+            const area = document.getElementById('regArea').value;
+            const pincode = document.getElementById('regPincode').value;
+            const phone = document.getElementById('regPhone').value;
+            const photoInput = document.getElementById('regPhotoFile');
+            const portfolioInput = document.getElementById('regPortfolioFiles');
+
+            const serviceNames = document.querySelectorAll('.reg-s-name');
+            const servicePrices = document.querySelectorAll('.reg-s-price');
+            let customServices = [];
+            for(let i = 0; i < serviceNames.length; i++) {
+                if(serviceNames[i].value && servicePrices[i].value) {
+                    customServices.push({ name: serviceNames[i].value, price: Number(servicePrices[i].value) });
+                }
+            }
+
+            const convertFileToBase64 = file => new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+
+            try {
+                let profilePhotoBase64 = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150';
+                if (photoInput.files && photoInput.files[0]) {
+                    profilePhotoBase64 = await convertFileToBase64(photoInput.files[0]);
+                }
+
+                let portfolioBase64List = [];
+                if (portfolioInput.files && portfolioInput.files.length > 0) {
+                    for (let file of Array.from(portfolioInput.files)) {
+                        portfolioBase64List.push(await convertFileToBase64(file));
+                    }
+                }
+
+                const newB = {
+                    name, area, pincode, phone,
+                    photo: profilePhotoBase64,
+                    portfolio: portfolioBase64List,
+                    rating: 5.0,
+                    ratingsList: [5.0],
+                    services: customServices,
+                    createdAt: new Date().toISOString()
+                };
+
+                await addDoc(collection(db, "beauticians"), newB);
+                toggleRegistrationModal();
+                document.getElementById('regForm').reset();
+                showToast('সফলভাবে বিউটিশিয়ান হিসেবে রেজিস্টার হয়েছেন!');
+            } catch (error) {
+                showToast('রেজিস্ট্রেশন করতে সমস্যা হয়েছে।', 'error');
+            }
+        }
+
+        // Public Reviews Modal
+        window.openPublicReviewsModal = function(beauticianId) {
+            const b = beauticians.find(item => item.id === beauticianId);
+            if(!b) return;
+            document.getElementById('publicModalImg').src = b.photo || '';
+            document.getElementById('publicModalName').innerText = b.name;
+            const ratingsArray = b.ratingsList || [5.0];
+            document.getElementById('publicModalRatingSummary').innerHTML = `<i class="fa-solid fa-star text-amber-500"></i> ${b.rating || 5.0} (${ratingsArray.length} জন রেটিং)`;
+
+            const portfolioContainer = document.getElementById('publicPortfolioGrid');
+            const photos = b.portfolio || [];
+            portfolioContainer.innerHTML = photos.length === 0 ? `<p class="text-xs text-slate-400 col-span-3 text-center py-2">কোনো ছবি নেই</p>` : photos.map(imgUrl => `
+                <div class="aspect-square rounded-xl overflow-hidden border shadow-sm"><img src="${imgUrl}" class="w-full h-full object-cover"></div>
+            `).join('');
+
+            const bReviews = allBookings.filter(req => req.beauticianId === beauticianId && req.isRated);
+            document.getElementById('publicReviewsList').innerHTML = bReviews.length === 0 ? `<p class="text-xs text-slate-400 text-center py-4">কোনো রিভিউ নেই</p>` : bReviews.map(r => `
+                <div class="bg-slate-50 border p-3 rounded-xl space-y-1">
+                    <div class="flex justify-between items-center text-xs"><span class="font-bold">${r.clientName}</span><span class="text-amber-500 font-bold">${r.rating} ⭐</span></div>
+                    <p class="text-xs text-slate-600 bg-white p-2 rounded-lg">"${r.review || ''}"</p>
+                </div>
+            `).join('');
+
+            document.getElementById('publicReviewsModal').classList.remove('hidden');
+        }
+
+        window.closePublicReviewsModal = () => document.getElementById('publicReviewsModal').classList.add('hidden');
+
+        // Rating
+        window.openRatingModal = function(bookingId, beauticianId) {
+            document.getElementById('rateBookingId').value = bookingId;
+            document.getElementById('rateBeauticianId').value = beauticianId;
+            selectedStarRating = 5;
+            highlightStars(5);
+            document.getElementById('clientReviewText').value = '';
+            document.getElementById('ratingModal').classList.remove('hidden');
+        }
+        window.closeRatingModal = () => document.getElementById('ratingModal').classList.add('hidden');
+        window.setRating = (stars) => { selectedStarRating = stars; highlightStars(stars); };
+        function highlightStars(stars) {
+            const starIcons = document.querySelectorAll('#starContainer i');
+            starIcons.forEach((icon, idx) => {
+                icon.className = idx < stars ? "fa-solid fa-star text-amber-400 hover:scale-110 transition" : "fa-regular fa-star text-slate-300 hover:scale-110 transition";
+            });
+            document.getElementById('ratingText').innerText = ["", "১ স্টার", "২ স্টার", "৩ স্টার", "৪ স্টার", "৫ স্টার (চমৎকার)"][stars];
+        }
+
+        window.submitRating = async function() {
+            const bookingId = document.getElementById('rateBookingId').value;
+            const beauticianId = document.getElementById('rateBeauticianId').value;
+            const review = document.getElementById('clientReviewText').value.trim();
+            try {
+                await updateDoc(doc(db, "bookings", bookingId), { rating: selectedStarRating, review, isRated: true });
+                const targetB = beauticians.find(b => b.id === beauticianId);
+                if (targetB) {
+                    const currentRatings = targetB.ratingsList || [5.0];
+                    currentRatings.push(selectedStarRating);
+                    const avgRating = (currentRatings.reduce((a, b) => a + b, 0) / currentRatings.length).toFixed(1);
+                    await updateDoc(doc(db, "beauticians", beauticianId), { rating: Number(avgRating), ratingsList: currentRatings });
+                }
+                closeRatingModal();
+                showToast('রেটিং সফলভাবে জমা হয়েছে!');
+            } catch (e) { showToast('সমস্যা হয়েছে', 'error'); }
+        }
+
+        function renderBeauticians(list, isSearched = false) {
+            const grid = document.getElementById('beauticianGrid');
+            if (!isSearched) {
+                grid.innerHTML = `<div class="col-span-full text-center py-8 text-slate-400 text-xs bg-white rounded-xl border">এলাকার নাম বা পিনকোড দিয়ে সার্চ করুন।</div>`;
+                document.getElementById('beauticianCount').innerText = `০ জন পাওয়া গেছে`;
+                return;
+            }
+            document.getElementById('beauticianCount').innerText = `${list.length} জন পাওয়া গেছে`;
+            grid.innerHTML = list.length === 0 ? `<div class="col-span-full text-center py-8 text-slate-400 text-xs bg-white rounded-xl border">কেউ পাওয়া যায়নি।</div>` : list.map(b => `
+                <div class="bg-white p-4 rounded-xl shadow-sm border flex flex-col justify-between">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <img src="${b.photo || ''}" class="w-14 h-14 rounded-full object-cover border-2 border-brand-500">
+                        <div>
+                            <h4 class="font-bold">${b.name}</h4>
+                            <p class="text-xs text-slate-500">${b.area} (${b.pincode || ''})</p>
+                            <button onclick="openPublicReviewsModal('${b.id}')" class="text-xs bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full font-bold mt-1"><i class="fa-solid fa-star text-amber-500"></i> ${b.rating || 5.0} (রিভিউ)</button>
+                        </div>
+                    </div>
+                    <div class="space-y-1 mb-3 bg-slate-50 p-2 rounded-lg text-xs">${(b.services || []).map(s => `<div class="flex justify-between"><span>${s.name}</span><span class="font-bold text-brand-600">₹${s.price}</span></div>`).join('')}</div>
+                    <button onclick="openBookingModal('${b.id}')" class="w-full bg-brand-600 text-white py-2 rounded-lg text-xs font-semibold">সার্ভিস বুক করুন</button>
+                </div>
+            `).join('');
+        }
+
+        window.filterBeauticians = function() {
+            const query = document.getElementById('userLocationInput').value.toLowerCase().trim();
+            if(!query) return showToast('এলাকা বা পিনকোড লিখুন', 'error');
+            renderBeauticians(beauticians.filter(b => (b.area && b.area.toLowerCase().includes(query)) || (b.pincode && b.pincode.includes(query))), true);
+        }
+
+        window.openBookingModal = function(id) {
+            if(!loggedCustomer) {
+                showToast('বুকিং করতে প্রথমে কাস্টমার অ্যাকাউন্টে লগইন করুন।', 'error');
+                return;
+            }
+            const b = beauticians.find(item => item.id === id);
+            if(!b) return;
+            document.getElementById('modalBeauticianId').value = b.id;
+            document.getElementById('modalBeauticianName').innerText = b.name;
+            document.getElementById('modalBeauticianArea').innerText = `এরিয়া: ${b.area} (${b.pincode})`;
+            document.getElementById('modalBeauticianImg').src = b.photo || '';
+            document.getElementById('clientName').value = loggedCustomer.name;
+            document.getElementById('clientPhone').value = loggedCustomer.phone;
+            document.getElementById('selectedService').innerHTML = (b.services || []).map(s => `<option value="${s.name} - ₹${s.price}">${s.name} (₹${s.price})</option>`).join('');
+            document.getElementById('bookingModal').classList.remove('hidden');
+        }
+
+        window.closeBookingModal = () => document.getElementById('bookingModal').classList.add('hidden');
+        window.toggleRegistrationModal = () => document.getElementById('registrationModal').classList.toggle('hidden');
+
+        window.handleBookingSubmit = async function(event) {
+            event.preventDefault();
+            if(!loggedCustomer) return;
+            try {
+                await addDoc(collection(db, "bookings"), {
+                    beauticianId: document.getElementById('modalBeauticianId').value,
+                    clientName: loggedCustomer.name,
+                    clientPhone: loggedCustomer.phone,
+                    clientEmail: loggedCustomer.email,
+                    service: document.getElementById('selectedService').value,
+                    date: document.getElementById('bookingDate').value,
+                    time: document.getElementById('bookingTime').value,
+                    address: document.getElementById('clientAddress').value,
+                    status: 'Pending', isRated: false, createdAt: new Date().toISOString()
+                });
+                showToast('বুকিং সফলভাবে সম্পন্ন হয়েছে!');
+                closeBookingModal();
+                document.getElementById('bookingForm').reset();
+            } catch (e) { showToast('সমস্যা হয়েছে', 'error'); }
+        }
+
+        window.updateBookingStatus = async function(bookingId, newStatus) {
+            try {
+                await updateDoc(doc(db, "bookings", bookingId), { status: newStatus });
+                showToast(`স্ট্যাটাস আপডেট করা হয়েছে!`);
+            } catch (e) { showToast('সমস্যা হয়েছে', 'error'); }
+        }
+
+        function renderBeauticianRequests() {
+            const requestsList = document.getElementById('beauticianRequestsList');
+            if(!loggedBeautician) return;
+            const myRequests = allBookings.filter(req => req.beauticianId === loggedBeautician.id);
+            document.getElementById('pendingRequestsCount').innerText = `${myRequests.length} টি রিকোয়েস্ট`;
+            requestsList.innerHTML = myRequests.length === 0 ? `<p class="text-xs text-slate-400 text-center py-4">কোনো বুকিং রিকোয়েস্ট নেই</p>` : myRequests.map(req => `
+                <div class="bg-slate-50 border p-4 rounded-xl flex flex-col sm:flex-row justify-between gap-3">
+                    <div>
+                        <span class="text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded font-bold">${req.service}</span>
+                        <h4 class="font-bold mt-1">${req.clientName} (${req.clientPhone})</h4>
+                        <p class="text-xs text-slate-500">${req.date} সময়: ${req.time}</p>
+                        <p class="text-xs text-slate-600 mt-1">ঠিকানা: ${req.address}</p>
+                    </div>
+                    <div class="flex flex-col items-end gap-2">
+                        <span class="px-3 py-1 rounded-lg text-xs font-bold ${req.status === 'Confirmed' ? 'bg-green-100 text-green-800' : req.status === 'Rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}">${req.status}</span>
+                        ${req.status === 'Pending' ? `<div class="flex gap-2"><button onclick="updateBookingStatus('${req.id}', 'Confirmed')" class="bg-green-600 text-white px-3 py-1 rounded text-xs">কনফার্ম</button><button onclick="updateBookingStatus('${req.id}', 'Rejected')" class="bg-red-500 text-white px-3 py-1 rounded text-xs">বাতিল</button></div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function listenToCustomers() {
+            onSnapshot(collection(db, "customers"), (snapshot) => {
+                customers = [];
+                snapshot.forEach(doc => customers.push({ id: doc.id, ...doc.data() }));
+            });
+        }
+
+        function listenToBeauticians() {
+            onSnapshot(collection(db, "beauticians"), (snapshot) => {
+                beauticians = [];
+                snapshot.forEach(doc => beauticians.push({ id: doc.id, ...doc.data() }));
+                if (loggedBeautician && !beauticians.some(b => b.id === loggedBeautician.id)) {
+                    loggedBeautician = null;
+                    checkLoginState();
+                }
+            });
+        }
+
+        function listenToBookings() {
+            onSnapshot(collection(db, "bookings"), (snapshot) => {
+                allBookings = [];
+                snapshot.forEach(doc => allBookings.push({ id: doc.id, ...doc.data() }));
+
+                const clientBookingsList = document.getElementById('clientBookingsList');
+                const myBookings = loggedCustomer ? allBookings.filter(req => req.clientPhone === loggedCustomer.phone) : [];
+                clientBookingsList.innerHTML = myBookings.length === 0 ? `<p class="text-xs text-slate-400 text-center py-2">কোনো বুকিং করা হয়নি</p>` : myBookings.map(req => `
+                    <div class="bg-pink-50 border border-pink-200 p-3 rounded-xl flex justify-between items-center text-xs">
+                        <div>
+                            <span class="font-bold text-brand-700">${req.service}</span>
+                            <p class="text-slate-500">তারিখ: ${req.date} (${req.time})</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="px-3 py-1 rounded-full font-semibold ${req.status === 'Confirmed' ? 'bg-green-600 text-white' : req.status === 'Rejected' ? 'bg-red-500 text-white' : 'bg-brand-600 text-white'}">${req.status}</span>
+                            ${req.status === 'Confirmed' && !req.isRated ? `<button onclick="openRatingModal('${req.id}', '${req.beauticianId}')" class="bg-amber-500 text-white px-2.5 py-1 rounded-lg font-bold">রেটিং দিন</button>` : req.isRated ? `<span class="text-amber-600 font-bold">${req.rating} ⭐</span>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+
+                if(loggedBeautician) renderBeauticianRequests();
+            });
+        }
+
+        listenToCustomers();
+        listenToBeauticians();
+        listenToBookings();
+        checkCustomerAuthState();
+    </script>
+</body>
+</html>
